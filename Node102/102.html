@@ -1,0 +1,125 @@
+<!doctype html>
+<html ng-app='HomeModule'>
+  <head>
+    <script src="angular.min.js"></script>
+    <style type="text/css">
+    .menu-disabled-true {
+      color: gray;
+    }
+    </style>
+  </head>
+  <body>
+    <div ng-controller='DeathrayMenuController'>
+      <ul>
+        <li class='menu-disabled-{{isDisabled}}' ng-click='stun()'>Stun</li>
+        <li ng-click='disintegrate()'>Disintegrate</li>
+        <li ng-click='erase()'>Erase from history</li>
+      </ul>
+    <div/>
+    <table ng-controller='AlbumController'>
+      <tr>
+        <td ng-click='sortByName()'>Name</td>
+        <td ng-click='sortByDuration()'>Duration</td>
+      </tr>
+      <tr ng-repeat='track in album'>
+        <td>{{track.name}}</td>
+        <td>{{track.duration}}</td>
+      </tr>
+    </table>
+    <form ng-controller="StartUpController">
+      Starting: <input ng-model="funding.startingEstimate">
+      Recommendation: {{funding.needed}}
+    </form>
+    <form ng-controller="StartUpController2">
+      Starting: <input ng-change="computeNeeded()" ng-model="funding.startingEstimate">
+      Recommendation: {{funding.needed}}
+      <button ng-click="requestFunding()">Fund my startup!</button>
+      <button ng-click="reset()">Reset</button>
+    </form>
+    <div ng-controller='StudentListController'>
+      <ul>
+        <li ng-repeat='student in students'>
+          <a ng-href='/student/view/{{student.id}}'>{{student.name}}</a>
+        </li>
+      </ul>
+      <button ng-click="insertTom()">Insert Tom</button>
+    </div>
+    <div ng-controller="HomeController">
+     <h1>{{pageHeading | titleCase}}</h1>
+    </div> 
+    <script>
+      function DeathrayMenuController($scope) {
+        $scope.isDisabled = false;
+        $scope.stun = function() {
+          // stun target, then disable menu to allow regeneration
+          $scope.isDisabled = true;
+        };
+      }
+      function AlbumController($scope) {
+        $scope.album = [{name:'Southwest Serenade', duration: '5:34'},
+                     {name:'Northern Light Waltz', duration: '3:21'},
+                     {name:'Eastern Tango', duration: '17:45'}];
+        
+        $scope.sortByName = function () {
+          var sorter = function(a, b) {
+            var A = a['name'], B = b['name'];
+            return ((A < B) ? -1 : (A > B) ? +1 : 0);
+          };
+          
+          $scope.album = $scope.album.sort(sorter);
+        };
+        
+        $scope.sortByDuration = function () {
+          var sorter = function(a, b) {
+            var A = a['duration'], B = b['duration'];
+            return ((A < B) ? -1 : (A > B) ? 1 : 0);
+          };
+          $scope.album = $scope.album.sort(sorter);
+        };
+      }
+      function StartUpController($scope) {
+        $scope.funding = { startingEstimate: 0 };
+        computeNeeded = function() {
+          $scope.funding.needed = $scope.funding.startingEstimate * 10;
+        };
+        $scope.$watch('funding.startingEstimate', computeNeeded);
+      }
+      function StartUpController2($scope) {
+        $scope.funding = { startingEstimate: 0 };
+        $scope.computeNeeded = function() {
+          $scope.funding.needed = $scope.funding.startingEstimate * 10;
+        };
+        $scope.requestFunding = function() {
+          window.alert("Sorry, please get more customers first.");
+        };
+        $scope.reset = function() {
+          $scope.funding.startingEstimate = 0;
+          $scope.funding.needed = 0;
+        };
+      }
+      var students = [{name:'Mary Contrary', id:'1'},
+        {name:'Jack Sprat', id:'2'},
+        {name:'Jill Hill', id:'3'}];
+      function StudentListController($scope) {
+        $scope.students = students;
+        $scope.insertTom = function () {
+          $scope.students.splice(1, 0, {name:'Tom Thumb', id:'4'});
+        };
+      }
+      var homeModule = angular.module('HomeModule', []);
+      homeModule.filter('titleCase', function() {
+        var titleCaseFilter = function(input) {
+          var words = input.split(' ');
+          for (var i = 0; i < words.length; i++) {
+            words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
+          }
+          return words.join(' ');
+        };
+        return titleCaseFilter;
+      });
+      function HomeController($scope) {
+        $scope.pageHeading = 'behold the majesty of your page title';
+      };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang='en' ng-app>
+<head>
+    <title>Shopping Cart</title>
+    <link href="bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      .selected {
+        background-color: lightgreen;
+      }
+    </style>
+</head>
+
+<body>
+    <div ng-controller="CartController">
+      <div ng-repeat="item in items">
+        <span>{{item.title}}</span>
+        <input ng-model="item.quantity">
+        <span>{{item.price | currency}}</span>
+        <span>{{item.price * item.quantity | currency}}</span>
+      </div>
+      <div>Total: {{bill.total | currency}}</div>
+      <div>Discount: {{bill.discount | currency}}</div>
+      <div>Subtotal: {{bill.subtotal | currency}}</div>
+    </div>
+    
+    <table ng-controller='RestaurantTableController'>
+      <tr ng-repeat='restaurant in directory' ng-mouseover='selectRestaurant($index)'
+          ng-class='{selected: $index==selectedRow}'>
+        <td>{{restaurant.name}}</td>
+        <td>{{restaurant.cuisine}}</td>
+      </tr>
+    </table>
+
+    <div ng-controller="CountController">
+      {{count}}
+      <button ng-click="count=3">Count Three</button>
+      <button ng-click='setCount()'>Set count to three</button>
+    </div>
+    
+<script src="angular.min.js"></script>
+<script>
+  function CartController($scope) {
+    $scope.bill = {};
+    $scope.items = [
+      {title: 'Paint pots', quantity: 8, price: 3.95},
+      {title: 'Polka dots', quantity: 17, price: 12.95},
+      {title: 'Pebbles', quantity: 5, price: 6.95}
+    ];
+    $scope.$watch(function() {
+      var total = 0;
+      for (var i = 0; i < $scope.items.length; i++) {
+        total = total + $scope.items[i].price * $scope.items[i].quantity;
+      }
+      $scope.bill.total = total;
+      $scope.bill.discount = total > 100 ? 10 : 0;
+      $scope.bill.subtotal = total - $scope.bill.discount;
+    });
+  }
+  
+  function RestaurantTableController($scope) {
+    $scope.directory = [{name:'The Handsome Heifer', cuisine:'BBQ'},
+      {name:'Green\'s Green Greens', cuisine:'Salads'},
+      {name:'House of Fine Fish', cuisine:'Seafood'}];
+    $scope.selectRestaurant = function(row) {
+      $scope.selectedRow = row;
+    };
+  }  
+  
+    function CountController($scope) {
+      $scope.setCount = function() {
+        $scope.count = 3;
+      };
+    }
+</script>
+</body>
+</html>
